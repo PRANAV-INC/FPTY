@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Resume Builder — Dashboard</title>
+  <style>
+    :root{
+      --bg-1: #0f172a; /* deep navy */
+      --bg-2: #0ea5a4; /* teal */
+      --accent: #ff7ab6; /* pink */
+      --card: rgba(255,255,255,0.06);
+      --glass: rgba(255,255,255,0.04);
+      --muted: rgba(255,255,255,0.68);
+      --radius: 12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg-1),#04263a 40%, #072b2d 100%);color:#e6f7f6}
+
+    .app{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      gap:24px;
+      height:100vh;
+      padding:28px;
+      align-items:stretch;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius);
+      padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 6px 18px rgba(0,0,0,0.45);
+      min-height:0;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--bg-2),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700}
+    .brand h1{margin:0;font-size:16px}
+    .nav{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+    .nav button{background:transparent;border:0;color:var(--muted);padding:10px 12px;text-align:left;border-radius:10px;cursor:pointer;font-size:14px}
+    .nav button.active{background:linear-gradient(90deg, rgba(14,165,164,0.12), rgba(255,122,182,0.06));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+
+    /* Content */
+    .main{
+      display:flex;flex-direction:column;gap:18px;min-height:0;
+    }
+    .header{
+      display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-radius:12px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow:0 6px 14px rgba(2,6,23,0.5);
+    }
+    .header .search{display:flex;gap:10px;align-items:center}
+    .search input{background:var(--glass);border:0;padding:10px 12px;border-radius:10px;color:#e9f7f6;min-width:220px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:14px;box-shadow:0 10px 30px rgba(2,6,23,0.6);
+    }
+
+    /* Dashboard layout */
+    .grid-2{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+    .hero{display:flex;flex-direction:column;gap:12px}
+    .hero h2{margin:0}
+    .controls{display:flex;gap:10px}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--bg-2),var(--accent));color:#05201f}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    /* Create form */
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input[type='text'],textarea,select{background:transparent;border:1px dashed rgba(255,255,255,0.06);padding:10px;border-radius:10px;color:#e9f7f6}
+    textarea{min-height:90px;resize:vertical}
+
+    /* Contact & About */
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+    footer{
+      margin-top:auto;padding:14px;border-radius:10px;background:linear-gradient(90deg, rgba(14,165,164,0.06), rgba(255,122,182,0.03));font-size:13px;color:rgba(2,6,23,0.9);display:flex;justify-content:space-between;align-items:center
+    }
+
+    /* Responsive */
+    @media (max-width:880px){
+      .app{grid-template-columns:1fr; padding:16px}
+      .grid-2{grid-template-columns:1fr}
+      .sidebar{order:2;flex-direction:row;gap:8px;overflow:auto}
+      .brand{display:none}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">AI</div>
+        <div>
+          <h1>ResumeForge</h1>
+          <div style="font-size:12px;color:var(--muted)">AI Resume Builder</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-btn active" data-target="home">🏠 Home</button>
+        <button class="nav-btn" data-target="create">✍️ Create</button>
+        <button class="nav-btn" data-target="about">ℹ️ About</button>
+        <button class="nav-btn" data-target="contact">✉️ Contact</button>
+      </nav>
+
+      <div style="margin-top:auto;font-size:13px;color:var(--muted);padding-top:12px;">
+        <strong>Tips</strong>
+        <div style="margin-top:6px">Use the <em>Create</em> page to generate a professional resume quickly. Try different templates and tones.</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="header card">
+        <div>
+          <div style="font-size:12px;color:var(--muted)">Welcome back,</div>
+          <div style="font-weight:700;font-size:18px">Pranav</div>
+        </div>
+        <div class="search">
+          <input id="globalSearch" placeholder="Search resumes, templates or tips..." />
+          <button class="btn ghost" id="quickGenerate">Quick Generate</button>
+        </div>
+      </header>
+
+      <section id="contentArea" class="card" style="overflow:auto;min-height:260px">
+        <!-- Views rendered by JS -->
+        <div id="view-home" class="view">
+          <div class="grid-2">
+            <div>
+              <div class="hero">
+                <h2>Make your next resume with AI</h2>
+                <p style="color:var(--muted)">Generate polished, ATS-friendly resumes in seconds. Tweak tone, layout, and skill emphasis to match the job.</p>
+                <div class="controls">
+                  <a href="contact.html"<button class="btn primary" onclick="showView('create')">
+                   Create Resume</button></a>
+                  <button class="btn ghost" onclick="alert('This demo has no backend — plug your API to generate resumes')">Import PDF</button>
+                </div>
+                 <div class="controls">
+                  <button class="btn primary" onclick="showView('create')">Create Resume</button>
+                  <button class="btn ghost" onclick="alert('This demo has no backend — plug your API to generate resumes')">Import PDF</button>
+                </div>
+                <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+                  <div style="padding:10px;border-radius:10px;background:var(--card);min-width:120px;text-align:center">
+                    <div style="font-weight:700">Templates</div>
+                    <div style="color:var(--muted)">6 available</div>
+                  </div>
+                  <div style="padding:10px;border-radius:10px;background:var(--card);min-width:120px;text-align:center">
+                    <div style="font-weight:700">Profiles</div>
+                    <div style="color:var(--muted)">12 saved</div>
+                  </div>
+                </div>
+              </div>
+
+              <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:18px 0" />
+
+              <div>
+                <h3 style="margin:0 0 8px 0">Recent activity</h3>
+                <ul style="margin:0;padding:0;list-style:none;color:var(--muted);font-size:14px">
+                  <li>• Generated resume for "Frontend Developer" — <em>2 hours ago</em></li>
+                  <li>• Saved template "Sleek Pro" — <em>yesterday</em></li>
+                  <li>• Exported PDF — <em>3 days ago</em></li>
+                </ul>
+              </div>
+            </div>
+
+            <aside>
+              <div style="padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00))">
+                <h4 style="margin:0">Resume Tips</h4>
+                <ol style="color:var(--muted)">
+                  <li>Use action verbs and quantify achievements.</li>
+                  <li>Tailor skills to the job post.</li>
+                  <li>Keep to 1–2 pages for mid-level roles.</li>
+                </ol>
+                <div style="margin-top:8px;font-size:13px;color:var(--muted)">Pro tip: use the AI Tone slider in Create for personality adjustments.</div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div id="view-create" class="view" style="display:none">
+          <h2>Create Resume</h2>
+          <p style="color:var(--muted)">Fill in the fields below or paste your existing experience for AI-assisted rewrite.</p>
+
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">
+            <div style="flex:1;min-width:320px">
+              <form id="createForm">
+                <label for="fullName">Full name</label>
+                <input id="fullName" type="text" placeholder="e.g. Priya Sharma" />
+
+                <label for="title">Professional title</label>
+                <input id="title" type="text" placeholder="e.g. Frontend Developer" />
+
+                <label for="summary">Professional summary</label>
+                <textarea id="summary" placeholder="Brief summary — the AI will expand this"></textarea>
+
+                <label for="skills">Skills (comma separated)</label>
+                <input id="skills" type="text" placeholder="JavaScript, React, Node.js" />
+
+                <label for="tone">Tone</label>
+                <select id="tone">
+                  <option>Professional</option>
+                  <option>Friendly</option>
+                  <option>Concise</option>
+                  <option>Creative</option>
+                </select>
+
+                <div style="display:flex;gap:8px;margin-top:10px">
+                  <button type="button" class="btn primary" onclick="generateMock()">Generate Preview</button>
+                  <button type="button" class="btn ghost" onclick="resetForm()">Reset</button>
+                </div>
+              </form>
+            </div>
+
+            <div style="width:360px;min-width:280px">
+              <div style="padding:12px;border-radius:12px;background:var(--card)">
+                <h4 style="margin-top:0">Preview</h4>
+                <div id="previewArea" style="font-size:14px;color:var(--muted)">No preview yet — click <strong>Generate Preview</strong>.</div>
+              </div>
+
+              <div style="margin-top:12px;padding:12px;border-radius:12px;background:linear-gradient(90deg, rgba(14,165,164,0.03), rgba(255,122,182,0.02))">
+                <div style="font-weight:700">Template: Sleek Pro</div>
+                <div style="color:var(--muted);margin-top:8px">Filename: <em>pranav_resume.pdf</em></div>
+                <div style="margin-top:8px;color:var(--muted)">Export options: PDF • DOCX • Plain text</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-about" class="view" style="display:none">
+          <h2>About ResumeForge</h2>
+          <p style="color:var(--muted)">ResumeForge is a lightweight AI-powered resume builder created to help job seekers craft ATS-friendly resumes quickly. Below is some random info about the project and mission.</p>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <div style="flex:1;min-width:220px;padding:12px;border-radius:10px;background:var(--card)">
+              <strong>Mission</strong>
+              <p style="color:var(--muted)">Make professional resumes accessible to everyone — from students to senior engineers — with intelligent suggestions and templates.</p>
+            </div>
+
+            <div style="flex:1;min-width:220px;padding:12px;border-radius:10px;background:var(--card)">
+              <strong>Built with</strong>
+              <p style="color:var(--muted)">HTML • CSS • Vanilla JS • Optional AI API (OpenAI, local LLM)</p>
+            </div>
+
+            <div style="flex:1;min-width:220px;padding:12px;border-radius:10px;background:var(--card)">
+              <strong>Random fact</strong>
+              <p style="color:var(--muted)">Average recruiter spends ~7 seconds on first pass. Focus on clear headings and quantified results.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-contact" class="view" style="display:none">
+          <h2>Contact</h2>
+          <p style="color:var(--muted)">Have feedback or need help? Send us a message and we'll get back to you.</p>
+
+          <div class="contact-grid" style="margin-top:12px">
+            <div style="padding:12px;border-radius:10px;background:var(--card)">
+              <form id="contactForm">
+                <label for="cname">Name</label>
+                <input id="cname" type="text" placeholder="Your name" />
+                <label for="cemail">Email</label>
+                <input id="cemail" type="text" placeholder="you@example.com" />
+                <label for="cmsg">Message</label>
+                <textarea id="cmsg" placeholder="How can we help?"></textarea>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button type="button" class="btn primary" onclick="submitContact()">Send</button>
+                  <button type="button" class="btn ghost" onclick="document.getElementById('contactForm').reset()">Clear</button>
+                </div>
+              </form>
+            </div>
+
+            <div style="padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00))">
+              <h4 style="margin-top:0">Reach us</h4>
+              <p style="color:var(--muted)">Email: support@resumeforge.example</p>
+              <p style="color:var(--muted)">Phone: +91 98765 43210</p>
+              <p style="color:var(--muted)">Address: 14 Innovation Park, Mumbai, India</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <footer>
+        <div>
+          © 2025 ResumeForge — Made with ❤️ • Random legal blurb: Use at your own risk.
+        </div>
+        <div style="font-size:13px;color:var(--muted)">
+          Built by AI + humans • Version 0.9.3
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <script>
+    // Simple view router
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const views = document.querySelectorAll('.view');
+
+    function showView(name){
+      views.forEach(v => v.style.display = v.id === 'view-'+name ? 'block' : 'none');
+      navButtons.forEach(b => b.classList.toggle('active', b.dataset.target === name));
+      // scroll to top of content
+      document.getElementById('contentArea').scrollTop = 0;
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => showView(btn.dataset.target));
+    });
+
+    // Quick generate fake preview
+    function generateMock(){
+      const name = document.getElementById('fullName').value || 'A. Candidate';
+      const title = document.getElementById('title').value || 'Software Engineer';
+      const summary = document.getElementById('summary').value || 'Results-oriented developer with experience in building web apps.';
+      const skills = document.getElementById('skills').value || 'JavaScript, React, Node.js';
+      const tone = document.getElementById('tone').value || 'Professional';
+
+      const preview = `\n\n${name} — ${title}\n\nSummary (${tone}): ${summary}\n\nKey skills: ${skills}\n\nExperience:\n• Built a web app that improved conversion by 26%\n• Improved site performance, reducing load time by 40%\n\nEducation:\n• B.Sc. Computer Science\n\n(Preview generated locally — connect to AI API for richer results)`;
+      document.getElementById('previewArea').textContent = preview;
+      alert('Preview generated — check the right-hand panel.');
+    }
+
+    function resetForm(){
+      document.getElementById('createForm').reset();
+      document.getElementById('previewArea').textContent = 'No preview yet — click Generate Preview.';
+    }
+
+    // Contact send (mock)
+    function submitContact(){
+      const name = document.getElementById('cname').value.trim();
+      const email = document.getElementById('cemail').value.trim();
+      const msg = document.getElementById('cmsg').value.trim();
+      if(!name || !email || !msg){
+        alert('Please fill all fields.');
+        return;
+      }
+      alert('Thanks, ' + name + '! Your message has been received (mock).');
+      document.getElementById('contactForm').reset();
+    }
+
+    // Quick keyboard shortcut for search (Enter triggers search alert in this static demo)
+    document.getElementById('globalSearch').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        alert('Search demo: "'+e.target.value+'" — this is a static demo, integrate with backend for real results.');
+      }
+    });
+
+    // initialize
+    showView('home');
+  </script>
+</body>
+</html>

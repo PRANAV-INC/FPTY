@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Resume Analyzer — Dashboard</title>
+  <style>
+    :root{
+      --bg-dark: #1a1f2b;
+      --bg-light: #202837;
+      --accent: #4ade80; /* green */
+      --accent2: #60a5fa; /* blue */
+      --muted: rgba(255,255,255,0.7);
+      --card: rgba(255,255,255,0.05);
+      --radius: 10px;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    body,html{margin:0;height:100%;background:linear-gradient(135deg,var(--bg-dark),#121620);color:white}
+
+    .app{display:grid;grid-template-columns:250px 1fr;height:100vh}
+    .sidebar{background:var(--bg-light);padding:20px;display:flex;flex-direction:column}
+    .brand{font-size:20px;font-weight:bold;color:var(--accent);margin-bottom:20px}
+    .nav{display:flex;flex-direction:column;gap:10px}
+    .nav button{background:none;border:none;color:var(--muted);padding:10px;border-radius:var(--radius);text-align:left;cursor:pointer}
+    .nav button.active, .nav button:hover{background:var(--card);color:white}
+
+    .main{display:flex;flex-direction:column}
+    .header{padding:15px 20px;background:var(--bg-light);display:flex;justify-content:space-between;align-items:center}
+    .header h1{margin:0;font-size:18px}
+
+    .content{flex:1;overflow:auto;padding:20px}
+    .card{background:var(--card);padding:15px;border-radius:var(--radius);margin-bottom:20px}
+
+    footer{background:var(--bg-light);padding:10px 20px;font-size:12px;color:var(--muted)}
+
+    input,textarea,select{width:100%;padding:8px;border-radius:var(--radius);border:none;margin-top:5px;background:rgba(255,255,255,0.08);color:white}
+    textarea{resize:vertical}
+    .btn{padding:8px 12px;border:none;border-radius:var(--radius);cursor:pointer}
+    .btn.primary{background:var(--accent);color:#111}
+    .btn.secondary{background:var(--accent2);color:#111}
+
+    .analysis-result{padding:10px;background:rgba(255,255,255,0.06);border-radius:var(--radius);margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">ResumeAnalyzer</div>
+      <nav class="nav">
+        <button class="nav-btn active" data-target="home">🏠 Home</button>
+        <button class="nav-btn" data-target="analyze">📊 Analyze</button>
+        <button class="nav-btn" data-target="tips">💡 Tips</button>
+        <button class="nav-btn" data-target="contact">✉️ Contact</button>
+      </nav>
+    </aside>
+
+    <div class="main">
+      <header class="header">
+        <h1 id="pageTitle">Home</h1>
+      </header>
+
+      <div class="content">
+        <div id="view-home" class="view">
+          <div class="card">
+            <h2>Welcome to ResumeAnalyzer</h2>
+            <p style="color:var(--muted)">Upload your resume and get instant AI-powered insights about structure, ATS compatibility, skill matching, and improvement suggestions.</p>
+          </div>
+        </div>
+
+        <div id="view-analyze" class="view" style="display:none">
+          <div class="card">
+            <h2>Analyze Your Resume</h2>
+            <label>Upload Resume (PDF/DOCX)</label>
+            <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" />
+            <label>Job Description (optional)</label>
+            <textarea id="jobDesc" placeholder="Paste the job description for targeted analysis..."></textarea>
+            <button class="btn primary" style="margin-top:10px" onclick="analyzeResume()">Run Analysis</button>
+
+            <div id="analysisResult" class="analysis-result" style="display:none"></div>
+          </div>
+        </div>
+
+        <div id="view-tips" class="view" style="display:none">
+          <div class="card">
+            <h2>Resume Improvement Tips</h2>
+            <ul style="color:var(--muted)">
+              <li>Use clear section headings (Experience, Education, Skills).</li>
+              <li>Quantify achievements (e.g., increased sales by 20%).</li>
+              <li>Match keywords from the job description.</li>
+              <li>Keep formatting simple and ATS-friendly.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="view-contact" class="view" style="display:none">
+          <div class="card">
+            <h2>Contact Us</h2>
+            <label>Your Name</label>
+            <input type="text" id="cname" placeholder="Name" />
+            <label>Your Email</label>
+            <input type="email" id="cemail" placeholder="Email" />
+            <label>Message</label>
+            <textarea id="cmsg" placeholder="Your message"></textarea>
+            <button class="btn secondary" style="margin-top:10px" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        &copy; 2025 ResumeAnalyzer — All rights reserved.
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const views = document.querySelectorAll('.view');
+    const pageTitle = document.getElementById('pageTitle');
+
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        const target = btn.dataset.target;
+        views.forEach(v => v.style.display = v.id === 'view-'+target ? 'block' : 'none');
+        navBtns.forEach(nb => nb.classList.remove('active'));
+        btn.classList.add('active');
+        pageTitle.textContent = target.charAt(0).toUpperCase()+target.slice(1);
+      });
+    });
+
+    function analyzeResume(){
+      const file = document.getElementById('resumeFile').files[0];
+      if(!file){
+        alert('Please upload a resume file');
+        return;
+      }
+      document.getElementById('analysisResult').style.display = 'block';
+      document.getElementById('analysisResult').innerHTML = `<strong>Analysis Summary:</strong><br>• File: ${file.name}<br>• ATS Score: 82%<br>• Matching Skills: React, JavaScript, Node.js<br>• Suggested Improvements: Add more quantifiable results.`;
+    }
+
+    function sendMessage(){
+      const name = document.getElementById('cname').value;
+      const email = document.getElementById('cemail').value;
+      const msg = document.getElementById('cmsg').value;
+      if(!name || !email || !msg){
+        alert('Please fill all fields');
+        return;
+      }
+      alert(`Thanks ${name}, your message has been sent!`);
+    }
+  </script>
+</body>
+</html>
